@@ -1,0 +1,131 @@
+#define DDRB2 2
+
+#define DDRB 0x01
+
+#define PORTB 0x02
+
+
+#define PB0 1
+#define PB1 2
+#define PB2 4
+
+#define SHIFTREG_CLK 0x4
+#define SHIFTREG_DATA 0x1
+
+.global main
+
+
+Delay_1sec:
+    
+    LDI     r16,   8       ; One clock cycle;
+Delay1:
+    LDI     r17,   125     ; One clock cycle
+Delay2:
+    LDI     r18,   250     ; One clock cycle
+Delay3:
+    DEC     r18            ; One clock cycle
+    NOP                     ; One clock cycle
+    BRNE    Delay3          ; Two clock cycles when jumping to Delay3, 1 clock when continuing to DEC
+
+    DEC     r17            ; One clock cycle
+    BRNE    Delay2          ; Two clock cycles when jumping to Delay2, 1 clock when continuing to DEC
+
+    DEC     r16            ; One clock Cycle
+    BRNE    Delay1          ; Two clock cycles when jumping to Delay1, 1 clock when continuing to RET
+RET
+
+write_shift_reg:
+    ; r16 to contain 8 bits to write
+    ; shift reg capable of shifting at 1MHZ
+    ; SHIFTREG_CLK
+    ; SHIFTREG_DATA -> 0x1
+    
+    mov r18, r16 ; store input at r18
+
+
+    in r17, PORTB ; hold sr clk down 
+    andi r17, (~SHIFTREG_CLK)
+    out PORTB, r17
+
+    ldi r20, 0
+cont_write:
+
+    mov r16, r18
+    andi r16, 1
+
+    in r19, PORTB
+    andi r19, ~SHIFTREG_DATA ;clear first bit of PORTB
+    or r19, r16 ; write the data bit
+    out PORTB, r19 
+
+    ; output clock pulse
+    in r17, PORTB 
+    ori r17, (SHIFTREG_CLK)
+    out PORTB, r17 
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    andi r17, (~SHIFTREG_CLK)
+    out PORTB, r17 
+    ; end output clock pulse
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+
+    lsr r18
+    subi r20, -1
+
+    cpi r20, 9
+    brne cont_write
+
+RET
+
+
+main:
+    ldi r16, 0xFF
+    out DDRB, r16
+    ldi r24, 0x00
+
+
+loop:
+
+
+    mov r16, r24
+    rcall write_shift_reg
+
+    subi r24, -1 
+
+    ldi r19, 0
+
+startwait:
+    ldi r17, 0
+
+wait:
+    subi r17, -1
+    cpi r17, 0
+    breq donewait
+    rjmp wait
+donewait:
+    subi r19, -1
+    cpi r19, 100
+    breq loop
+    rjmp startwait
+
+nextloopSetup: 
+    ldi r24, 0xFF
+
+

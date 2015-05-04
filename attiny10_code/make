@@ -1,0 +1,5 @@
+avr-gcc -mmcu=attiny11 ./intboard.S -o ./test.elf
+avr-objcopy -O ihex test.elf test.hex
+echo "P"
+cat ./test.hex
+
