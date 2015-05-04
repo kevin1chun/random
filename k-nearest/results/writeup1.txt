@@ -1,0 +1,54 @@
+Note if you wish to run knearest , you'll need to install pyopenCL
+
+1.
+
+(a)
+Error Rates (used diff with wc to determine)
+k = 1 => 85 / 1000 => 8.5% error
+new feature space errors:  79
+
+k = 2 => 97 / 1000 => 9.7% error
+new feature space errors:86
+
+k = 3 => 82 / 1000 => 8.2% error
+new feature space errors:81
+
+new feature space errors:k = 5 => 91 / 1000 => 9.1% error
+new feature space errors:80
+
+k = 10 => 106 / 1000 => 10.6% error
+new feature space errors:85
+
+k = 25 => 117 / 1000 => 11.7% error
+new feature space errors:101
+(b)
+Ties broken by choosing the smallest most common digit value, if no single mode exists.
+
+
+(c)
+No, my basic algorithm performed worse for k = 2. This makes sense because
+either both neighbors agree or we have a 50/50 split which gives no information
+as to the actual most likely value. k = 3 performed  better.
+
+(d)
+digit 4 goes to 3 instead of 5, it has a characteristic lower curve which looks very similar
+to a 3, which must have made it appear to be closer to the other 3 digits.
+
+similarly digit 108 goes to 3 instead of 9, it also has a very strong lower curve, like a 3. 
+
+digit 243 is a very slim 4 which is classified as a 1, quite understandably. 
+
+In general it seems that digits with compressed features, and features which are characteristic
+of other digits are often missclassified. 
+
+I thought of trying to input create a feature which captures the number
+and amount of loops in an image. Also perhaps the width and height of the
+digit, with the hope that doing so would introduce more distance between
+digits like 3 and 5. 
+
+
+(e)
+
+I recreated the feature space by mapping a 3 pixel long line across the image and
+combining the sum of those 3 pixels to produce features in the new feature space.
+This lead to a noticable improvement, see (a). 
