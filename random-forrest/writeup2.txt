@@ -1,0 +1,43 @@
+
+
+2.
+
+(a)
+
+T = 1 => 72 incorrect =>  14% % error rate
+
+T = 2 => 76 incorrect => 15.2 % error rate
+
+T = 5 => 48 incorrect => 9.6 % error rate
+
+T = 10 => 46 incorrect => 9.2% error rate
+Down to 41 was possible with different depth trees.
+
+T = 25 => 50 incorrect => 10% error rate
+
+Note that for lower T trials a deeper stopping
+depth will bring the error rate down, also the
+low T trials appear to be more dependant on the
+random number seed used. 
+
+This makes some sense, as it suggests that when
+using many Trees they each learn less about the
+problem (using a shallower depth), but the
+consensus vote makes up for this. 
+
+(b)
+In the event of a tie, the email is classified as not-spam, as this makes
+the most sense in a real email system, a user would rather one more spam
+message reach them, than miss a legitimate email.
+
+(c).
+
+I used a max depth of 14 as my stopping rule. I tried 
+stopping when the entropy was low, but this didn't seem give any
+improvement in accuracy. Of course I also stop should the
+node contain a single class. 
+
+(d) 
+
+I don't think I deviated from the norm. I used this website for inspiration
+on the info gain technique (http://www.cise.ufl.edu/~ddd/cap6635/Fall-97/Short-papers/2.htm)
