@@ -1,0 +1,137 @@
+<!-- index.html -->
+<html>
+  <head>
+    <title>Hello React</title>
+    <script src="http://fb.me/react-0.12.2.js"></script>
+    <script src="http://fb.me/JSXTransformer-0.12.2.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+
+  <link rel="stylesheet" href="css/font-awesome.min.css">
+   <script type="text/jsx">
+   var ToDoList = React.createClass({
+    getInitialState: function(){
+        return { todoitems: []};
+    },
+    componentDidMount: function(){
+      var self = this;
+
+      setInterval(function () {
+        $.getJSON("http://todo.marcomontagna.com/load.php", function(result){
+          self.setState({ todoitems: result });
+        });
+      }, 1000);
+    },
+    render : function () {
+      var tasks = this.state.todoitems.map(function (item) {
+        return <ToDoItem key={item.id} id={item.id} note={item.note} />;
+      });
+      return (<div> 
+      <h1> Reminders</h1>
+      {tasks}  
+      </div>);
+    }
+   });
+   
+   var ToDoItem = React.createClass({
+    getInitialState: function(){
+    return { note: ""};
+    },
+    handleDelete: function(){
+      var id = this.props.id;
+      jQuery.ajax({ type: "POST", url: "http://todo.marcomontagna.com/delete.php", data : {id: id}});
+      },
+    render : function () {
+      return <div><hr /><p> {this.props.note} <i onClick={this.handleDelete} className="closeButton fa fa-times"></i></p></div>;
+    }
+   });
+   
+   
+   var ToDoEntry = React.createClass({
+    getInitialState: function(){
+    return { value: ""};
+    },
+    handleChange: function(event) {
+        this.setState({value: event.target.value});
+
+      },
+    handleSubmit: function(event) {
+      var note = this.state.value;
+      this.setState({value: ""});
+      jQuery.ajax({ type: "POST", url: "http://todo.marcomontagna.com/create.php", data : {note: note}});
+      },
+    render : function () {
+      return (<div><textarea className="remindTextEntry" value={this.state.value} onChange={this.handleChange} ></textarea><br />
+        <input className="remindSubmit" type="submit" onClick={this.handleSubmit}></input></div>
+      );
+    }
+   });
+   
+   
+   React.render(<ToDoList /> ,document.getElementById("content"));
+    React.render(<ToDoEntry /> ,document.getElementById("input-area"));
+   </script>
+
+
+  <style>
+  .closeButton:hover {
+    cursor: pointer;
+  }
+  .remindSubmit {
+  width: 90%;
+  padding: 5px;
+  font-weight: bold;
+  }
+    .closeButton {
+      margin-right: 20px;
+      float: right;
+    }
+    #input-area {
+      width: 40%;
+      margin-left: auto;
+      margin-right: auto;
+      border: 1px solid black;
+      text-align: center;
+      padding-top: 10px;
+      padding-bottom: 10px;
+      border-top-width: 0px;  
+      
+    }
+ 
+    #content {
+    width: 40%;
+
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid black;
+    text-align: center;
+
+  }
+  
+  .remindTextEntry {
+  width: 90%;
+  min-height: 65px;
+  margin-bottom: 10px;
+  }
+  
+  @media screen and (max-width: 1000px) {
+    #content {
+      width: 95%;
+    }
+    #input-area {
+      width: 95%;
+    }
+  }
+
+
+  </style>
+
+  </head>
+  <body>
+
+
+  <div id="content"></div>
+
+  <div id="input-area"></div>
+
+  </body>
+</html>
